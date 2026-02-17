@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useRef, useEffect, useCallback, useMemo, useState } from "react";
+import React, {
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import Globe, { GlobeMethods } from "react-globe.gl";
 import { TrackingData } from "@/lib/tracking-types";
 import * as THREE from "three";
@@ -48,9 +54,12 @@ interface PointData {
   color: string;
 }
 
-const GLOBE_IMAGE_DARK = "//unpkg.com/three-globe/example/img/earth-night.jpg";
-const GLOBE_IMAGE_BLUE = "//unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
-const BUMP_IMAGE = "//unpkg.com/three-globe/example/img/earth-topology.png";
+const GLOBE_IMAGE =
+  "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg";
+const BUMP_IMAGE =
+  "https://unpkg.com/three-globe/example/img/earth-topology.png";
+const NIGHT_SKY =
+  "https://unpkg.com/three-globe/example/img/night-sky.png";
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -70,77 +79,118 @@ export default function GlobeViz({ trackingData, isVisible }: GlobeVizProps) {
   const [globeReady, setGlobeReady] = useState(false);
   const isMobile = useIsMobile();
 
+  // Robust dimension measurement with ResizeObserver + fallback
   useEffect(() => {
-    const updateDimensions = () => {
+    if (!containerRef.current) return;
+
+    const measure = () => {
       if (containerRef.current) {
-        setDimensions({
-          width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight,
-        });
+        const { clientWidth, clientHeight } = containerRef.current;
+        if (clientWidth > 0 && clientHeight > 0) {
+          setDimensions({ width: clientWidth, height: clientHeight });
+        }
       }
     };
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
-  }, []);
+
+    // Immediate measure
+    measure();
+
+    // Fallback: use window dimensions if container hasn't laid out yet
+    if (dimensions.width === 0) {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    // ResizeObserver for live updates
+    let observer: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(() => measure());
+      observer.observe(containerRef.current);
+    }
+
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("resize", measure);
+      observer?.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVisible]);
 
   const onGlobeReady = useCallback(() => {
     setGlobeReady(true);
   }, []);
 
+  // Configure globe controls, lighting, renderer after it's ready
   useEffect(() => {
     if (!globeRef.current || !globeReady) return;
     const globe = globeRef.current;
 
-    const controls = globe.controls();
-    if (controls) {
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.35;
-      controls.enableZoom = !isMobile;
-      controls.minDistance = isMobile ? 220 : 180;
-      controls.maxDistance = 500;
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.1;
-    }
-
-    const scene = globe.scene();
-    if (scene) {
-      scene.fog = null;
-
-      const directionalLight = new THREE.DirectionalLight(0x0891b2, 0.3);
-      directionalLight.position.set(1, 1, 1);
-      scene.add(directionalLight);
-
-      const ambientLight = new THREE.AmbientLight(0x1e293b, 2.0);
-      scene.add(ambientLight);
-    }
-
-    const renderer = globe.renderer();
-    if (renderer) {
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.1;
-      if (isMobile) {
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    try {
+      const controls = globe.controls();
+      if (controls) {
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.35;
+        controls.enableZoom = !isMobile;
+        controls.minDistance = isMobile ? 220 : 180;
+        controls.maxDistance = 500;
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.1;
       }
-    }
+    } catch { /* controls may not be ready */ }
+
+    try {
+      const scene = globe.scene();
+      if (scene) {
+        scene.fog = null;
+        const directionalLight = new THREE.DirectionalLight(0x0891b2, 0.3);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
+        const ambientLight = new THREE.AmbientLight(0x1e293b, 2.0);
+        scene.add(ambientLight);
+      }
+    } catch { /* scene may not be ready */ }
+
+    try {
+      const renderer = globe.renderer();
+      if (renderer) {
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.1;
+        if (isMobile) {
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        }
+      }
+    } catch { /* renderer may not be ready */ }
   }, [globeReady, isMobile]);
 
+  // Fly to the route midpoint when tracking data arrives
   useEffect(() => {
     if (!globeRef.current || !trackingData || !globeReady) return;
     const globe = globeRef.current;
 
-    const midLat = (trackingData.origin.lat + trackingData.destination.lat + trackingData.current.lat) / 3;
-    const midLng = (trackingData.origin.lng + trackingData.destination.lng + trackingData.current.lng) / 3;
+    const midLat =
+      (trackingData.origin.lat +
+        trackingData.destination.lat +
+        trackingData.current.lat) /
+      3;
+    const midLng =
+      (trackingData.origin.lng +
+        trackingData.destination.lng +
+        trackingData.current.lng) /
+      3;
 
     globe.pointOfView(
       { lat: midLat, lng: midLng, altitude: isMobile ? 2.8 : 2.0 },
       2500
     );
 
-    const controls = globe.controls();
-    if (controls) {
-      controls.autoRotateSpeed = 0.15;
-    }
+    try {
+      const controls = globe.controls();
+      if (controls) {
+        controls.autoRotateSpeed = 0.15;
+      }
+    } catch { /* controls may not be ready */ }
   }, [trackingData, globeReady, isMobile]);
 
   const arcsData: ArcData[] = useMemo(() => {
@@ -204,9 +254,24 @@ export default function GlobeViz({ trackingData, isVisible }: GlobeVizProps) {
   const pointsData: PointData[] = useMemo(() => {
     if (!trackingData) return [];
     return [
-      { lat: trackingData.origin.lat, lng: trackingData.origin.lng, size: 0.5, color: "#22d3ee" },
-      { lat: trackingData.current.lat, lng: trackingData.current.lng, size: 0.8, color: "#06b6d4" },
-      { lat: trackingData.destination.lat, lng: trackingData.destination.lng, size: 0.5, color: "#ec4899" },
+      {
+        lat: trackingData.origin.lat,
+        lng: trackingData.origin.lng,
+        size: 0.5,
+        color: "#22d3ee",
+      },
+      {
+        lat: trackingData.current.lat,
+        lng: trackingData.current.lng,
+        size: 0.8,
+        color: "#06b6d4",
+      },
+      {
+        lat: trackingData.destination.lat,
+        lng: trackingData.destination.lng,
+        size: 0.5,
+        color: "#ec4899",
+      },
     ];
   }, [trackingData]);
 
@@ -220,7 +285,9 @@ export default function GlobeViz({ trackingData, isVisible }: GlobeVizProps) {
       {
         lat: trackingData.origin.lat,
         lng: trackingData.origin.lng,
-        text: isMobile ? trackingData.origin.label : `ORIGIN: ${trackingData.origin.label}`,
+        text: isMobile
+          ? trackingData.origin.label
+          : `ORIGIN: ${trackingData.origin.label}`,
         color: "rgba(34, 211, 238, 0.9)",
         size: sz,
         dotRadius: dot,
@@ -228,7 +295,9 @@ export default function GlobeViz({ trackingData, isVisible }: GlobeVizProps) {
       {
         lat: trackingData.current.lat,
         lng: trackingData.current.lng,
-        text: isMobile ? trackingData.current.label : `CURRENT: ${trackingData.current.label}`,
+        text: isMobile
+          ? trackingData.current.label
+          : `CURRENT: ${trackingData.current.label}`,
         color: "rgba(6, 182, 212, 1)",
         size: szCurrent,
         dotRadius: dotCurrent,
@@ -236,21 +305,15 @@ export default function GlobeViz({ trackingData, isVisible }: GlobeVizProps) {
       {
         lat: trackingData.destination.lat,
         lng: trackingData.destination.lng,
-        text: isMobile ? trackingData.destination.label : `DEST: ${trackingData.destination.label}`,
+        text: isMobile
+          ? trackingData.destination.label
+          : `DEST: ${trackingData.destination.label}`,
         color: "rgba(236, 72, 153, 0.9)",
         size: sz,
         dotRadius: dot,
       },
     ];
   }, [trackingData, isMobile]);
-
-  const globeCustomMaterial = useMemo(() => {
-    return new THREE.MeshPhongMaterial({
-      bumpScale: 8,
-      specular: new THREE.Color("#0c1322"),
-      shininess: 6,
-    });
-  }, []);
 
   if (!isVisible) return null;
 
@@ -263,15 +326,14 @@ export default function GlobeViz({ trackingData, isVisible }: GlobeVizProps) {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 1.2, ease: "easeOut" }}
     >
-      {dimensions.width > 0 && (
+      {dimensions.width > 0 && dimensions.height > 0 && (
         <Globe
           ref={globeRef}
           width={dimensions.width}
           height={dimensions.height}
-          globeImageUrl={trackingData ? GLOBE_IMAGE_BLUE : GLOBE_IMAGE_DARK}
+          globeImageUrl={GLOBE_IMAGE}
           bumpImageUrl={BUMP_IMAGE}
-          backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-          globeMaterial={globeCustomMaterial}
+          backgroundImageUrl={NIGHT_SKY}
           atmosphereColor="#0891b2"
           atmosphereAltitude={0.2}
           arcsData={arcsData}
@@ -284,8 +346,12 @@ export default function GlobeViz({ trackingData, isVisible }: GlobeVizProps) {
           ringsData={ringsData}
           ringColor={"color" as unknown as string}
           ringMaxRadius={"maxR" as unknown as number}
-          ringPropagationSpeed={"propagationSpeed" as unknown as number}
-          ringRepeatPeriod={"repeatPeriod" as unknown as number}
+          ringPropagationSpeed={
+            "propagationSpeed" as unknown as number
+          }
+          ringRepeatPeriod={
+            "repeatPeriod" as unknown as number
+          }
           pointsData={pointsData}
           pointColor={"color" as unknown as string}
           pointAltitude={0.01}

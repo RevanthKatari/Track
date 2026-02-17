@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: false,
   transpilePackages: ["three", "react-globe.gl", "globe.gl", "three-globe"],
   webpack: (config, { isServer }) => {
     if (!isServer) {
