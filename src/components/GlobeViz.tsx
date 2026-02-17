@@ -132,7 +132,9 @@ export default function GlobeViz({ trackingData, isVisible }: GlobeVizProps) {
       if (controls) {
         controls.autoRotate = true;
         controls.autoRotateSpeed = 0.35;
-        controls.enableZoom = !isMobile;
+        controls.enableZoom = true;
+        controls.enableRotate = true;
+        controls.enablePan = false;
         controls.minDistance = isMobile ? 220 : 180;
         controls.maxDistance = 500;
         controls.enableDamping = true;

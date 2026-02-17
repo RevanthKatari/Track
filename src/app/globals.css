@@ -124,10 +124,10 @@ html {
   }
 }
 
-/* Globe container overrides */
-.scene-container canvas {
+/* Globe container overrides — touch-action:none lets OrbitControls handle drag/pinch */
+canvas {
   outline: none !important;
-  touch-action: pan-x pan-y;
+  touch-action: none !important;
 }
 
 /* Animate text glow */

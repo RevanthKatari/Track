@@ -116,16 +116,16 @@ export default function Home() {
       {/* HUD overlay */}
       <HudOverlay isActive={isCompact} />
 
-      {/* ===== Main UI Layer ===== */}
-      <div className="relative z-10 flex h-full flex-col">
+      {/* ===== Main UI Layer (pointer-events-none so globe receives input) ===== */}
+      <div className="pointer-events-none relative z-10 flex h-full flex-col">
         <LayoutGroup>
           {/* Search region */}
           <motion.div
             layout
             className={
               isCompact
-                ? "flex items-start justify-start px-4 pt-4 md:px-6 md:pt-5"
-                : "flex flex-1 items-center justify-center px-4 md:px-6"
+                ? "pointer-events-auto flex items-start justify-start px-4 pt-4 md:px-6 md:pt-5"
+                : "pointer-events-auto flex flex-1 items-center justify-center px-4 md:px-6"
             }
             transition={{
               layout: {
@@ -156,7 +156,7 @@ export default function Home() {
                   damping: 22,
                   mass: 0.8,
                 }}
-                className="fixed right-0 top-0 z-20 hidden h-full w-full max-w-[380px] p-5 pt-5 md:block"
+                className="pointer-events-auto fixed right-0 top-0 z-20 hidden h-full w-full max-w-[380px] p-5 pt-5 md:block"
               >
                 <StatusPanel trackingData={trackingData} isVisible={true} />
               </motion.div>
@@ -176,7 +176,7 @@ export default function Home() {
                   damping: 28,
                   mass: 0.8,
                 }}
-                className="fixed inset-x-0 bottom-0 z-30 flex max-h-[70dvh] flex-col rounded-t-2xl border-t border-white/[0.08] bg-neutral-950/90 backdrop-blur-2xl md:hidden"
+                className="pointer-events-auto fixed inset-x-0 bottom-0 z-30 flex max-h-[70dvh] flex-col rounded-t-2xl border-t border-white/[0.08] bg-neutral-950/90 backdrop-blur-2xl md:hidden"
               >
                 {/* Drag handle + toggle */}
                 <button

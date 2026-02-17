@@ -37,7 +37,7 @@ export default function HudOverlay({ isActive }: HudOverlayProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="fixed right-3 top-4 z-30 flex items-center gap-2.5 font-mono text-[9px] tracking-wider text-neutral-600 md:hidden"
+            className="pointer-events-none fixed right-3 top-4 z-30 flex items-center gap-2.5 font-mono text-[9px] tracking-wider text-neutral-600 md:hidden"
           >
             <span className="flex items-center gap-1">
               <Wifi className="h-2.5 w-2.5 text-emerald-500/40" />
@@ -57,7 +57,7 @@ export default function HudOverlay({ isActive }: HudOverlayProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="fixed right-6 top-5 z-30 hidden items-center gap-5 font-mono text-[10px] tracking-wider text-neutral-600 md:flex"
+            className="pointer-events-none fixed right-6 top-5 z-30 hidden items-center gap-5 font-mono text-[10px] tracking-wider text-neutral-600 md:flex"
           >
             <span className="flex items-center gap-1.5">
               <Radio className="h-3 w-3 text-cyan-500/40" />
@@ -86,7 +86,7 @@ export default function HudOverlay({ isActive }: HudOverlayProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ delay: 0.7, duration: 0.6 }}
-            className="fixed bottom-6 left-4 z-30 hidden font-mono text-[9px] tracking-widest text-neutral-700/70 sm:block md:left-6"
+            className="pointer-events-none fixed bottom-6 left-4 z-30 hidden font-mono text-[9px] tracking-widest text-neutral-700/70 sm:block md:left-6"
           >
             <div className="flex items-center gap-2">
               <Zap className="h-3 w-3 text-cyan-500/20" />
@@ -127,7 +127,7 @@ export default function HudOverlay({ isActive }: HudOverlayProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ delay: 0.8, duration: 0.5 }}
-            className="fixed bottom-6 left-1/2 z-30 hidden -translate-x-1/2 font-mono text-[9px] tracking-[0.3em] text-neutral-800 md:block"
+            className="pointer-events-none fixed bottom-6 left-1/2 z-30 hidden -translate-x-1/2 font-mono text-[9px] tracking-[0.3em] text-neutral-800 md:block"
           >
             ORBITAL COMMAND // GLOBAL TRACKING NETWORK
           </motion.div>
