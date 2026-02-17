@@ -1,5 +1,11 @@
 import { TrackingData, TrackingService, StatusEvent, GeoPoint } from "@/lib/tracking-types";
 
+function getFedExCredentials() {
+  const apiKey = process.env.FEDEX_API_KEY;
+  const secretKey = process.env.FEDEX_SECRET_KEY;
+  return { apiKey, secretKey };
+}
+
 const ROUTES: Record<string, { origin: GeoPoint; waypoints: GeoPoint[]; destination: GeoPoint }> = {
   default: {
     origin: { lat: 31.2304, lng: 121.4737, label: "Shanghai, China" },
@@ -105,6 +111,15 @@ export class FedExProvider implements TrackingService {
   }
 
   async track(trackingId: string): Promise<TrackingData> {
+    const { apiKey, secretKey } = getFedExCredentials();
+
+    // TODO: When ready for live API calls, use apiKey + secretKey to
+    // authenticate with FedEx Track API and return real data.
+    // The credentials are read from env vars (never bundled client-side).
+    if (apiKey && secretKey) {
+      console.log("[FedEx] Credentials loaded from environment (using mock data for now)");
+    }
+
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const routeKeys = Object.keys(ROUTES);

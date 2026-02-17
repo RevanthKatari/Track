@@ -9,7 +9,6 @@ import HudOverlay from "@/components/HudOverlay";
 import NoiseTexture from "@/components/NoiseTexture";
 import ParticleField from "@/components/ParticleField";
 import { TrackingData } from "@/lib/tracking-types";
-import { registry } from "@/lib/tracking-registry";
 
 const GlobeViz = dynamic(() => import("@/components/GlobeViz"), {
   ssr: false,
@@ -37,7 +36,15 @@ export default function Home() {
     setPhase("loading");
 
     try {
-      const data = await registry.track(trackingId);
+      const res = await fetch("/api/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trackingId }),
+      });
+
+      if (!res.ok) throw new Error("Tracking request failed");
+
+      const data: TrackingData = await res.json();
       setTrackingData(data);
       setPhase("tracking");
     } catch (err) {
