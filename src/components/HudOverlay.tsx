@@ -31,13 +31,33 @@ export default function HudOverlay({ isActive }: HudOverlayProps) {
     <AnimatePresence>
       {isActive && (
         <>
-          {/* Top-right HUD cluster */}
+          {/* === Mobile: minimal top-right HUD (icons + time only) === */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="fixed right-6 top-5 z-30 flex items-center gap-5 font-mono text-[10px] tracking-wider text-neutral-600"
+            className="fixed right-3 top-4 z-30 flex items-center gap-2.5 font-mono text-[9px] tracking-wider text-neutral-600 md:hidden"
+          >
+            <span className="flex items-center gap-1">
+              <Wifi className="h-2.5 w-2.5 text-emerald-500/40" />
+            </span>
+            <span className="flex items-center gap-1">
+              <Signal className="h-2.5 w-2.5 text-violet-500/40" />
+            </span>
+            <span className="flex items-center gap-1">
+              <Cpu className="h-2.5 w-2.5 text-neutral-600" />
+              <span className="tabular-nums">{time}</span>
+            </span>
+          </motion.div>
+
+          {/* === Desktop: full top-right HUD cluster (unchanged) === */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="fixed right-6 top-5 z-30 hidden items-center gap-5 font-mono text-[10px] tracking-wider text-neutral-600 md:flex"
           >
             <span className="flex items-center gap-1.5">
               <Radio className="h-3 w-3 text-cyan-500/40" />
@@ -60,13 +80,13 @@ export default function HudOverlay({ isActive }: HudOverlayProps) {
             </span>
           </motion.div>
 
-          {/* Bottom-left system info */}
+          {/* Bottom-left system info — hidden on small mobile, shown sm+ */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ delay: 0.7, duration: 0.6 }}
-            className="fixed bottom-6 left-6 z-30 font-mono text-[9px] tracking-widest text-neutral-700/70"
+            className="fixed bottom-6 left-4 z-30 hidden font-mono text-[9px] tracking-widest text-neutral-700/70 sm:block md:left-6"
           >
             <div className="flex items-center gap-2">
               <Zap className="h-3 w-3 text-cyan-500/20" />
@@ -81,13 +101,13 @@ export default function HudOverlay({ isActive }: HudOverlayProps) {
             </div>
           </motion.div>
 
-          {/* Corner bracket decorations */}
+          {/* Corner bracket decorations — desktop only */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ delay: 0.9, duration: 1 }}
-            className="pointer-events-none fixed inset-0 z-20"
+            className="pointer-events-none fixed inset-0 z-20 hidden md:block"
           >
             <div className="absolute left-3 top-3 h-6 w-6 border-l border-t border-cyan-500/[0.08]" />
             <div className="absolute right-3 top-3 h-6 w-6 border-r border-t border-cyan-500/[0.08]" />
@@ -101,13 +121,13 @@ export default function HudOverlay({ isActive }: HudOverlayProps) {
             </div>
           </motion.div>
 
-          {/* Bottom center coordinate display */}
+          {/* Bottom center coordinate display — hidden on mobile */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ delay: 0.8, duration: 0.5 }}
-            className="fixed bottom-6 left-1/2 z-30 -translate-x-1/2 font-mono text-[9px] tracking-[0.3em] text-neutral-800"
+            className="fixed bottom-6 left-1/2 z-30 hidden -translate-x-1/2 font-mono text-[9px] tracking-[0.3em] text-neutral-800 md:block"
           >
             ORBITAL COMMAND // GLOBAL TRACKING NETWORK
           </motion.div>

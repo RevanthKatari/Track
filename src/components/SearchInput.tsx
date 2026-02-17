@@ -35,7 +35,7 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
       layout
       className={cn(
         "w-full",
-        isCompact ? "max-w-md" : "max-w-2xl"
+        isCompact ? "max-w-full md:max-w-md" : "max-w-2xl"
       )}
     >
       {/* Hero area (only in idle state) */}
@@ -46,20 +46,20 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30, transition: { duration: 0.3 } }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="mb-10 text-center"
+            className="mb-6 text-center md:mb-10"
           >
             {/* Animated icon */}
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-              className="mb-7 flex justify-center"
+              className="mb-5 flex justify-center md:mb-7"
             >
               <div className="relative">
                 <div className="absolute -inset-3 animate-ping rounded-full bg-cyan-500/10" />
                 <div className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-cyan-500/20 to-violet-500/20 blur-md" />
-                <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-cyan-500/20 bg-neutral-950/80 shadow-[0_0_30px_-5px_rgba(6,182,212,0.2)] backdrop-blur-sm">
-                  <Satellite className="h-7 w-7 text-cyan-400" />
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-full border border-cyan-500/20 bg-neutral-950/80 shadow-[0_0_30px_-5px_rgba(6,182,212,0.2)] backdrop-blur-sm md:h-16 md:w-16">
+                  <Satellite className="h-5 w-5 text-cyan-400 md:h-7 md:w-7" />
                 </div>
               </div>
             </motion.div>
@@ -69,7 +69,7 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="font-mono text-5xl font-bold tracking-tight text-white md:text-6xl"
+              className="font-mono text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
             >
               <span className="text-glow">ORBITAL</span>
               <span className="bg-gradient-to-r from-cyan-400 via-violet-400 to-pink-400 bg-clip-text text-transparent">
@@ -82,7 +82,7 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="mt-3 font-mono text-[11px] tracking-[0.35em] text-neutral-600 uppercase"
+              className="mt-2 font-mono text-[9px] tracking-[0.2em] text-neutral-600 uppercase sm:text-[10px] sm:tracking-[0.25em] md:mt-3 md:text-[11px] md:tracking-[0.35em]"
             >
               Global Package Intelligence System
             </motion.p>
@@ -92,7 +92,7 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: 0.8, duration: 0.6 }}
-              className="mx-auto mt-5 h-px w-40 bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent"
+              className="mx-auto mt-4 h-px w-28 bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent sm:w-32 md:mt-5 md:w-40"
             />
           </motion.div>
         )}
@@ -103,7 +103,7 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
         <motion.div
           layout
           className={cn(
-            "group relative overflow-hidden rounded-2xl",
+            "group relative overflow-hidden rounded-xl md:rounded-2xl",
             "border bg-neutral-950/60 backdrop-blur-xl",
             "transition-all duration-500",
             isFocused || isLoading
@@ -128,15 +128,15 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-500/[0.02] via-transparent to-violet-500/[0.02]" />
 
           <div className={cn(
-            "relative flex items-center gap-3",
-            isCompact ? "px-4 py-3" : "px-5 py-4"
+            "relative flex items-center gap-2 sm:gap-3",
+            isCompact ? "px-3 py-2.5 md:px-4 md:py-3" : "px-3 py-3 sm:px-4 sm:py-3.5 md:px-5 md:py-4"
           )}>
             {isLoading ? (
-              <Loader2 className="h-5 w-5 shrink-0 animate-spin text-cyan-400" />
+              <Loader2 className="h-4 w-4 shrink-0 animate-spin text-cyan-400 md:h-5 md:w-5" />
             ) : (
               <Search
                 className={cn(
-                  "h-5 w-5 shrink-0 transition-colors duration-300",
+                  "h-4 w-4 shrink-0 transition-colors duration-300 md:h-5 md:w-5",
                   isFocused ? "text-cyan-400" : "text-neutral-600"
                 )}
               />
@@ -148,13 +148,15 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
               onChange={(e) => setValue(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              placeholder={isCompact ? "Track another package..." : "Enter tracking ID — e.g. 7489 2034 5621"}
+              placeholder={isCompact ? "Track another..." : "Enter tracking ID"}
               disabled={isLoading}
               className={cn(
-                "w-full bg-transparent font-mono text-white outline-none",
+                "w-full min-w-0 bg-transparent font-mono text-white outline-none",
                 "placeholder:text-neutral-700",
                 "disabled:opacity-50",
-                isCompact ? "text-sm" : "text-base md:text-lg"
+                isCompact
+                  ? "text-xs sm:text-sm"
+                  : "text-sm sm:text-base md:text-lg"
               )}
             />
             <motion.button
@@ -163,17 +165,17 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className={cn(
-                "flex shrink-0 items-center gap-2 rounded-xl px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wider",
+                "flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-wider sm:gap-2 sm:rounded-xl sm:px-4 sm:py-2 md:px-5 md:py-2.5 md:text-xs",
                 "bg-gradient-to-r from-cyan-500 to-violet-500",
                 "text-white shadow-lg shadow-cyan-500/20",
                 "transition-all duration-300",
                 "hover:shadow-cyan-500/30",
                 "disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:shadow-none",
-                isCompact && "px-4 py-2"
+                isCompact && "px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2"
               )}
             >
-              <Crosshair className={cn("h-3.5 w-3.5", isCompact && "h-3 w-3")} />
-              {isLoading ? "Scanning..." : "Track"}
+              <Crosshair className="h-3 w-3 md:h-3.5 md:w-3.5" />
+              <span className="hidden sm:inline">{isLoading ? "Scanning..." : "Track"}</span>
             </motion.button>
           </div>
 
@@ -200,7 +202,7 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
             transition={{ delay: 1, duration: 0.8 }}
-            className="mt-5 flex items-center justify-center gap-6 font-mono text-[10px] tracking-wider text-neutral-600 uppercase"
+            className="mt-4 flex items-center justify-center gap-4 font-mono text-[9px] tracking-wider text-neutral-600 uppercase sm:gap-6 sm:text-[10px] md:mt-5"
           >
             <span className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-500/60 shadow-[0_0_6px_rgba(6,182,212,0.4)]" />
@@ -208,11 +210,13 @@ export default function SearchInput({ onSearch, isLoading, isCompact }: SearchIn
             </span>
             <span className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-neutral-700/50" />
-              <span className="text-neutral-700">DHL (Soon)</span>
+              <span className="text-neutral-700">DHL</span>
+              <span className="hidden text-neutral-700 sm:inline">(Soon)</span>
             </span>
             <span className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-neutral-700/50" />
-              <span className="text-neutral-700">UPS (Soon)</span>
+              <span className="text-neutral-700">UPS</span>
+              <span className="hidden text-neutral-700 sm:inline">(Soon)</span>
             </span>
           </motion.div>
         )}

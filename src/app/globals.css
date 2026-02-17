@@ -16,10 +16,33 @@
 html,
 body {
   height: 100%;
+  height: 100dvh;
   width: 100%;
   overflow: hidden;
   color: var(--foreground);
   background: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent iOS bounce / pull-to-refresh on the whole page */
+html {
+  overscroll-behavior: none;
+}
+
+/* Safe-area inset padding for notched devices */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Touch-action: allow touch on interactive elements, prevent double-tap zoom */
+html {
+  touch-action: manipulation;
 }
 
 /* Selection highlight */
@@ -28,22 +51,45 @@ body {
   color: white;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
+/* Custom scrollbar — desktop */
+@media (min-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+/* Thin scrollbar on mobile (Firefox + Chromium) */
+@media (max-width: 767px) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 2px;
-}
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 1px;
+  }
 }
 
 /* Glassmorphism card base */
@@ -81,6 +127,7 @@ body {
 /* Globe container overrides */
 .scene-container canvas {
   outline: none !important;
+  touch-action: pan-x pan-y;
 }
 
 /* Animate text glow */
@@ -120,6 +167,12 @@ body {
   animation: gridPulse 8s ease-in-out infinite;
 }
 
+@media (max-width: 767px) {
+  .grid-overlay {
+    background-size: 40px 40px;
+  }
+}
+
 /* Flicker effect for HUD elements */
 @keyframes hudFlicker {
   0%,
@@ -137,4 +190,12 @@ body {
 
 .hud-flicker {
   animation: hudFlicker 6s ease-in-out infinite;
+}
+
+/* Disable text selection on interactive globe area on mobile */
+@media (max-width: 767px) {
+  canvas {
+    -webkit-user-select: none;
+    user-select: none;
+  }
 }

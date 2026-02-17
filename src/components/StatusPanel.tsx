@@ -9,6 +9,7 @@ import {
   Truck,
   CheckCircle2,
   ArrowRight,
+  ArrowDown,
   Shield,
   Activity,
   Navigation,
@@ -95,40 +96,40 @@ export default function StatusPanel({ trackingData, isVisible }: StatusPanelProp
         initial="hidden"
         animate="visible"
         exit="exit"
-        className="flex h-full flex-col gap-3 overflow-y-auto pr-1 scrollbar-thin"
+        className="flex h-full flex-col gap-2.5 overflow-y-auto pr-1 scrollbar-thin md:gap-3"
       >
         {/* Header Card */}
-        <motion.div variants={cardVariants} className="glass-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-cyan-500/10 ring-1 ring-cyan-500/20">
-              <Package className="h-3.5 w-3.5 text-cyan-400" />
+        <motion.div variants={cardVariants} className="glass-card p-3 md:p-4">
+          <div className="mb-2.5 flex items-center gap-2 md:mb-3">
+            <div className="flex h-5 w-5 items-center justify-center rounded-md bg-cyan-500/10 ring-1 ring-cyan-500/20 md:h-6 md:w-6">
+              <Package className="h-3 w-3 text-cyan-400 md:h-3.5 md:w-3.5" />
             </div>
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-400">
+            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.2em] text-cyan-400 md:text-[10px]">
               Shipment Intel
             </span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5 md:space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-neutral-500">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-neutral-500 md:text-[10px]">
                 Tracking ID
               </span>
-              <span className="font-mono text-xs font-medium text-white">
+              <span className="max-w-[55%] truncate font-mono text-[11px] font-medium text-white md:text-xs">
                 {trackingData.trackingId}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-neutral-500">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-neutral-500 md:text-[10px]">
                 Carrier
               </span>
-              <span className="font-mono text-xs font-medium text-violet-400">
+              <span className="font-mono text-[11px] font-medium text-violet-400 md:text-xs">
                 {trackingData.carrier}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-neutral-500">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-neutral-500 md:text-[10px]">
                 Status
               </span>
-              <span className="flex items-center gap-1.5 font-mono text-xs font-medium text-emerald-400">
+              <span className="flex items-center gap-1.5 font-mono text-[11px] font-medium text-emerald-400 md:text-xs">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
@@ -140,16 +141,46 @@ export default function StatusPanel({ trackingData, isVisible }: StatusPanelProp
         </motion.div>
 
         {/* Route Card */}
-        <motion.div variants={cardVariants} className="glass-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-violet-500/10 ring-1 ring-violet-500/20">
-              <MapPin className="h-3.5 w-3.5 text-violet-400" />
+        <motion.div variants={cardVariants} className="glass-card p-3 md:p-4">
+          <div className="mb-2.5 flex items-center gap-2 md:mb-3">
+            <div className="flex h-5 w-5 items-center justify-center rounded-md bg-violet-500/10 ring-1 ring-violet-500/20 md:h-6 md:w-6">
+              <MapPin className="h-3 w-3 text-violet-400 md:h-3.5 md:w-3.5" />
             </div>
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400">
+            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.2em] text-violet-400 md:text-[10px]">
               Route Map
             </span>
           </div>
-          <div className="flex items-center gap-2">
+
+          {/* Mobile: vertical stack */}
+          <div className="flex flex-col gap-1.5 md:hidden">
+            <div className="flex items-center gap-2 rounded-lg border border-cyan-500/10 bg-cyan-500/5 p-2">
+              <div className="flex-1 min-w-0">
+                <div className="font-mono text-[8px] uppercase tracking-wider text-neutral-500">Origin</div>
+                <div className="truncate font-mono text-[11px] font-medium text-cyan-300">
+                  {trackingData.origin.label}
+                </div>
+              </div>
+              <ArrowDown className="h-3 w-3 shrink-0 text-neutral-600" />
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border border-violet-500/10 bg-violet-500/5 p-2">
+              <div className="flex-1 min-w-0">
+                <div className="font-mono text-[8px] uppercase tracking-wider text-neutral-500">Current</div>
+                <div className="truncate font-mono text-[11px] font-medium text-violet-300">
+                  {trackingData.current.label}
+                </div>
+              </div>
+              <ArrowDown className="h-3 w-3 shrink-0 text-neutral-600" />
+            </div>
+            <div className="rounded-lg border border-pink-500/10 bg-pink-500/5 p-2">
+              <div className="font-mono text-[8px] uppercase tracking-wider text-neutral-500">Destination</div>
+              <div className="truncate font-mono text-[11px] font-medium text-pink-300">
+                {trackingData.destination.label}
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: horizontal row (unchanged) */}
+          <div className="hidden items-center gap-2 md:flex">
             <div className="flex-1 space-y-1 rounded-lg border border-cyan-500/10 bg-cyan-500/5 p-2">
               <div className="font-mono text-[9px] uppercase tracking-wider text-neutral-500">Origin</div>
               <div className="font-mono text-[11px] font-medium text-cyan-300">
@@ -174,21 +205,21 @@ export default function StatusPanel({ trackingData, isVisible }: StatusPanelProp
         </motion.div>
 
         {/* ETA Card */}
-        <motion.div variants={cardVariants} className="glass-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-pink-500/10 ring-1 ring-pink-500/20">
-              <Clock className="h-3.5 w-3.5 text-pink-400" />
+        <motion.div variants={cardVariants} className="glass-card p-3 md:p-4">
+          <div className="mb-2.5 flex items-center gap-2 md:mb-3">
+            <div className="flex h-5 w-5 items-center justify-center rounded-md bg-pink-500/10 ring-1 ring-pink-500/20 md:h-6 md:w-6">
+              <Clock className="h-3 w-3 text-pink-400 md:h-3.5 md:w-3.5" />
             </div>
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-pink-400">
+            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.2em] text-pink-400 md:text-[10px]">
               Estimated Delivery
             </span>
           </div>
-          <div className="font-mono text-lg font-bold text-white">
+          <div className="font-mono text-base font-bold text-white md:text-lg">
             {trackingData.estimatedDelivery}
           </div>
           {/* Progress bar */}
-          <div className="mt-3 space-y-1">
-            <div className="flex justify-between font-mono text-[9px] uppercase tracking-wider text-neutral-500">
+          <div className="mt-2.5 space-y-1 md:mt-3">
+            <div className="flex justify-between font-mono text-[8px] uppercase tracking-wider text-neutral-500 md:text-[9px]">
               <span>Progress</span>
               <span className="text-cyan-400">{trackingData.progress}%</span>
             </div>
@@ -204,12 +235,12 @@ export default function StatusPanel({ trackingData, isVisible }: StatusPanelProp
         </motion.div>
 
         {/* Timeline Card */}
-        <motion.div variants={cardVariants} className="glass-card p-4">
-          <div className="mb-3 flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-500/10 ring-1 ring-emerald-500/20">
-              <Activity className="h-3.5 w-3.5 text-emerald-400" />
+        <motion.div variants={cardVariants} className="glass-card p-3 md:p-4">
+          <div className="mb-2.5 flex items-center gap-2 md:mb-3">
+            <div className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-500/10 ring-1 ring-emerald-500/20 md:h-6 md:w-6">
+              <Activity className="h-3 w-3 text-emerald-400 md:h-3.5 md:w-3.5" />
             </div>
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-400">
+            <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.2em] text-emerald-400 md:text-[10px]">
               Activity Log
             </span>
           </div>
@@ -221,7 +252,7 @@ export default function StatusPanel({ trackingData, isVisible }: StatusPanelProp
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + index * 0.08 }}
                 className={cn(
-                  "relative flex gap-3 py-2",
+                  "relative flex gap-3 py-1.5 md:py-2",
                   index < trackingData.statusHistory.length - 1 &&
                     "border-l border-white/[0.06] ml-[7px] pl-[15px]",
                   index === trackingData.statusHistory.length - 1 && "ml-[7px] pl-[15px]"
@@ -229,7 +260,7 @@ export default function StatusPanel({ trackingData, isVisible }: StatusPanelProp
               >
                 <div
                   className={cn(
-                    "absolute -left-[4.5px] top-2.5 flex h-[9px] w-[9px] items-center justify-center rounded-full",
+                    "absolute -left-[4.5px] top-2 flex h-[9px] w-[9px] items-center justify-center rounded-full md:top-2.5",
                     index === 0
                       ? "bg-cyan-400 ring-2 ring-cyan-400/30"
                       : "bg-neutral-700 ring-1 ring-neutral-600"
@@ -247,16 +278,16 @@ export default function StatusPanel({ trackingData, isVisible }: StatusPanelProp
                     </span>
                     <span
                       className={cn(
-                        "font-mono text-[11px] font-medium",
+                        "font-mono text-[10px] font-medium leading-tight md:text-[11px]",
                         index === 0 ? "text-white" : "text-neutral-400"
                       )}
                     >
                       {event.description}
                     </span>
                   </div>
-                  <div className="mt-0.5 flex items-center gap-2 font-mono text-[9px] text-neutral-600">
+                  <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0 font-mono text-[8px] text-neutral-600 md:text-[9px]">
                     <span>{formatTimestamp(event.timestamp)}</span>
-                    <span>·</span>
+                    <span className="hidden sm:inline">·</span>
                     <span>{event.location}</span>
                   </div>
                 </div>

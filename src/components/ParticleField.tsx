@@ -1,11 +1,17 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 export default function ParticleField() {
+  const [count, setCount] = useState(50);
+
+  useEffect(() => {
+    setCount(window.innerWidth < 768 ? 20 : 50);
+  }, []);
+
   const particles = useMemo(() => {
-    return Array.from({ length: 50 }, (_, i) => ({
+    return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -14,7 +20,7 @@ export default function ParticleField() {
       delay: Math.random() * 10,
       opacity: Math.random() * 0.3 + 0.05,
     }));
-  }, []);
+  }, [count]);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
