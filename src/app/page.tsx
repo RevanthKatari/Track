@@ -15,7 +15,12 @@ const GlobeViz = dynamic(() => import("@/components/GlobeViz"), {
   ssr: false,
   loading: () => (
     <div className="absolute inset-0 flex items-center justify-center">
-      <div className="h-32 w-32 animate-pulse rounded-full bg-cyan-500/5 ring-1 ring-cyan-500/10" />
+      <div className="relative">
+        <div className="h-40 w-40 animate-pulse rounded-full bg-cyan-500/5 ring-1 ring-cyan-500/10" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="h-20 w-20 animate-spin rounded-full border-2 border-transparent border-t-cyan-500/30" />
+        </div>
+      </div>
     </div>
   ),
 });
@@ -47,20 +52,60 @@ export default function Home() {
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-neutral-950">
+      {/* Noise texture overlay */}
       <NoiseTexture />
+
+      {/* Floating particle field */}
       <ParticleField />
 
-      {/* Background glow effects */}
+      {/* Subtle background glow orbs */}
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-cyan-500/[0.02] blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-violet-500/[0.02] blur-[120px]" />
+        <motion.div
+          className="absolute left-1/4 top-1/3 h-[500px] w-[500px] rounded-full bg-cyan-500/[0.03] blur-[150px]"
+          animate={{
+            x: [0, 30, 0],
+            y: [0, -20, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-1/4 right-1/3 h-[400px] w-[400px] rounded-full bg-violet-500/[0.03] blur-[130px]"
+          animate={{
+            x: [0, -20, 0],
+            y: [0, 30, 0],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute right-1/4 top-1/2 h-[300px] w-[300px] rounded-full bg-pink-500/[0.02] blur-[100px]"
+          animate={{
+            x: [0, 15, 0],
+            y: [0, 15, 0],
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        />
       </div>
 
-      {/* Globe (always mounted for smooth transition, visibility controlled) */}
+      {/* Grid overlay for idle state */}
+      <AnimatePresence>
+        {phase === "idle" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="pointer-events-none fixed inset-0 z-[1] grid-overlay"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* 3D Globe */}
       <Suspense
         fallback={
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-32 w-32 animate-pulse rounded-full bg-cyan-500/5 ring-1 ring-cyan-500/10" />
+            <div className="relative">
+              <div className="h-40 w-40 animate-pulse rounded-full bg-cyan-500/5 ring-1 ring-cyan-500/10" />
+            </div>
           </div>
         }
       >
@@ -70,25 +115,26 @@ export default function Home() {
         />
       </Suspense>
 
-      {/* HUD overlay elements */}
+      {/* HUD overlay */}
       <HudOverlay isActive={isCompact} />
 
       {/* Main UI Layer */}
       <div className="relative z-10 flex h-full flex-col">
         <LayoutGroup>
-          {/* Search area — centered when idle, top-left when tracking */}
+          {/* Search region */}
           <motion.div
             layout
-            className={isCompact
-              ? "flex items-start justify-start p-6"
-              : "flex flex-1 items-center justify-center p-6"
+            className={
+              isCompact
+                ? "flex items-start justify-start p-6 pt-5"
+                : "flex flex-1 items-center justify-center px-6"
             }
             transition={{
               layout: {
                 type: "spring",
-                stiffness: 200,
-                damping: 28,
-                mass: 1,
+                stiffness: 180,
+                damping: 26,
+                mass: 0.9,
               },
             }}
           >
@@ -99,20 +145,20 @@ export default function Home() {
             />
           </motion.div>
 
-          {/* Status Panel — right side overlay */}
+          {/* Status Panel (right side) */}
           <AnimatePresence>
             {phase === "tracking" && trackingData && (
               <motion.div
-                initial={{ opacity: 0, x: 100 }}
+                initial={{ opacity: 0, x: 120 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 100 }}
+                exit={{ opacity: 0, x: 120 }}
                 transition={{
                   type: "spring",
-                  stiffness: 200,
-                  damping: 24,
-                  mass: 1,
+                  stiffness: 180,
+                  damping: 22,
+                  mass: 0.8,
                 }}
-                className="fixed right-0 top-0 z-20 h-full w-full max-w-sm p-6 pt-6"
+                className="fixed right-0 top-0 z-20 h-full w-full max-w-[380px] p-5 pt-5"
               >
                 <StatusPanel trackingData={trackingData} isVisible={true} />
               </motion.div>
@@ -121,18 +167,27 @@ export default function Home() {
         </LayoutGroup>
       </div>
 
-      {/* Scan line effect on loading */}
+      {/* Scan line animation during loading */}
       <AnimatePresence>
         {phase === "loading" && (
           <motion.div
-            initial={{ top: 0, opacity: 0 }}
-            animate={{ top: "100%", opacity: [0, 1, 1, 0] }}
+            initial={{ top: "0%", opacity: 0 }}
+            animate={{ top: "100%", opacity: [0, 0.8, 0.8, 0] }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="pointer-events-none fixed left-0 z-40 h-[2px] w-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_4px_rgba(6,182,212,0.3)]"
+            className="pointer-events-none fixed left-0 z-40 h-[1px] w-full"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, rgba(6,182,212,0.6), rgba(139,92,246,0.4), transparent)",
+              boxShadow:
+                "0 0 30px 6px rgba(6,182,212,0.15), 0 0 60px 10px rgba(6,182,212,0.05)",
+            }}
           />
         )}
       </AnimatePresence>
+
+      {/* Bottom gradient fade */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[5] h-32 bg-gradient-to-t from-neutral-950 to-transparent" />
     </main>
   );
 }

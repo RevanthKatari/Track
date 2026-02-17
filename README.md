@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ORBITAL TRACK — Sci-Fi Package Tracking Dashboard
+
+A cinematic, "Orbital Command" style package tracking dashboard built with Next.js 14, featuring an interactive 3D globe visualization, glassmorphism UI, and smooth Framer Motion animations.
+
+## Stack
+
+- **Next.js 14** (App Router)
+- **Tailwind CSS** (Deep Space Dark Mode)
+- **Framer Motion** (Spring physics, AnimatePresence, layout animations)
+- **react-globe.gl** / Three.js (3D globe with arcs, rings, labels)
+- **Lucide React** (Icons)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **3D Globe**: Interactive globe with animated arcs connecting origin → current → destination, pulsing rings at key locations, and auto-rotation.
+- **Search**: A glowing, monospaced search input that transitions from center screen to top-left upon tracking.
+- **Status Panel**: HUD-style cards with shipment intel, route map, progress bar, and activity timeline.
+- **Glassmorphism**: Translucent cards with blur filters, thin borders, and noise textures.
+- **Mock Tracking**: Strategy Pattern architecture with FedEx mock provider — ready for DHL/UPS extension.
 
-## Learn More
+## Architecture
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/
+│   ├── page.tsx          # Main orchestrator (search state, layout transitions)
+│   ├── layout.tsx        # Root layout with dark theme
+│   └── globals.css       # Tailwind + custom glassmorphism + animations
+├── components/
+│   ├── GlobeViz.tsx      # 3D globe (react-globe.gl) with arcs, rings, labels
+│   ├── SearchInput.tsx   # Hero search bar with animations
+│   ├── StatusPanel.tsx   # Right-side tracking info cards
+│   ├── HudOverlay.tsx    # Sci-fi HUD elements (time, status, brackets)
+│   ├── NoiseTexture.tsx  # Subtle noise grain overlay
+│   └── ParticleField.tsx # Floating particle background
+├── lib/
+│   ├── tracking-types.ts     # TypeScript interfaces
+│   ├── tracking-registry.ts  # Provider registry (Strategy Pattern)
+│   └── utils.ts              # cn() utility
+└── providers/
+    └── fedex-provider.ts     # Mock FedEx tracking data
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Adding New Carriers
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Create a new file in `src/providers/` (e.g., `dhl-provider.ts`)
+2. Implement the `TrackingService` interface
+3. Register it in `src/lib/tracking-registry.ts`
